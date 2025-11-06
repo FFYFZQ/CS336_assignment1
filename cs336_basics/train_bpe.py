@@ -53,6 +53,10 @@ def merge_new_tokens(words, pair, new_token_id, pair_counts):
 
 def pre_tokenization(chunk: str, special_tokens, pair_counts, words):
 
+    """
+    pre_tokenization，并且将预分词的结果加入到全局的word中
+    """
+
     # 预分词的regex pattern
     pattern = re.compile(
         r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
@@ -123,25 +127,17 @@ def train_bpe(
 
     for j in range(nums_merge):
 
-        best_pair = max(
-            pair_counts, key=lambda p: (pair_counts[p], vocab[p[0]], vocab[p[1]])
-        )
+        best_pair = max(pair_counts, key=lambda p: (pair_counts[p], vocab[p[0]], vocab[p[1]]))
 
         if pair_counts[best_pair] <= 0:
             break
 
-        merges.append(
-            (vocab[best_pair[0]], vocab[best_pair[1]])
-        )  # 添加获取的出现次数最多的元组
+        merges.append((vocab[best_pair[0]], vocab[best_pair[1]]))  # 添加获取的出现次数最多的元组
 
-        new_token_bytes = (
-            vocab[best_pair[0]] + vocab[best_pair[1]]
-        )  # 一个新的字符序列(bytes)
+        new_token_bytes = (vocab[best_pair[0]] + vocab[best_pair[1]])  # 一个新的字符序列(bytes)
 
         vocab[offset] = new_token_bytes  # 更新词汇表
-        words = merge_new_tokens(
-            words, best_pair, offset, pair_counts
-        )  # merge的同时更新计数
+        words = merge_new_tokens(words, best_pair, offset, pair_counts)  # merge的同时更新计数
         offset += 1
 
     return vocab, merges
