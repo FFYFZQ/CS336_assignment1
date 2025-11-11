@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from jaxtyping import Float
 from torch import Tensor
-
+import math
 
 class Linear(nn.Module):
     """
@@ -24,16 +24,9 @@ class Linear(nn.Module):
         """
         super().__init__()
 
-        # TODO: Create weight parameter W with shape (out_features, in_features)
-        # Use nn.Parameter to make it a learnable parameter
-        # Hint: torch.empty(out_features, in_features, device=device, dtype=dtype)
-        self.W = nn.Parameter(
-            torch.empty(out_features, in_features, device=device, dtype=dtype)
-        )
-
-        # TODO: Initialize weights using torch.nn.init.trunc_normal_
-        # Standard initialization for transformers
-        torch.nn.init.trunc_normal_(self.W, mean=0.0, std=0.02)
+        self.W = nn.Parameter(torch.empty(out_features, in_features, device=device, dtype=dtype))
+        std = math.sqrt(2/(out_features + in_features))
+        torch.nn.init.trunc_normal_(self.W, mean=0.0, std = std, a = -3.0 * std, b = 3.0 * std)
 
     def forward(self, x: Float[Tensor, "... d_in"]) -> Float[Tensor, "... d_out"]:
         """
@@ -45,7 +38,5 @@ class Linear(nn.Module):
         Returns:
             Output tensor with last dimension = out_features
         """
-        # TODO: Implement the linear transformation
-        # Hint: Use torch.matmul or @ operator
-        # Remember: output = x @ W.T
+
         return x @ self.W.T
