@@ -103,3 +103,51 @@ def grad_clip(params: Iterable[nn.Parameter], max_grad_norm, eps: int = 1e-6):
         if param.grad is not None:
             param.grad.mul_(scale)
     return None
+
+
+def get_batch_data(input_array, batch_size, context_length, device="mps"):
+
+    max_vaild_index = len(input_array) - context_length - 1
+
+    index = torch.randint(low=0, high=max_vaild_index + 1, size=(batch_size,))
+
+    offset = torch.arange(context_length + 1)
+
+    index = index.unsqueeze(-1) + offset
+
+    input_array = torch.from_numpy(input_array)
+
+    batch_data = input_array[index]
+
+    x = batch_data[:, :-1]
+    y = batch_data[:, 1:]
+
+    if device is not None:
+        x = x.to(device)
+        y = y.to(device)
+
+    return x, y
+
+
+# checkpoint function
+def save_checkpoint(
+    model: nn.Module, optimizer: torch.optim.Optimizer, iteration: int, obj
+):
+    checkpoint = {
+        "model_weights": model.state_dict(),
+        "optimizer_weights": optimizer.state_dict(),
+        "iteration": iteration,
+    }
+
+    torch.save(checkpoint, obj)
+
+
+def load_checkpoint(src, model, optimizer):
+    checkpoint = torch.load(src)
+    model_weights = checkpoint["model_weights"]
+    optimizer_weights = checkpoint["optimizer_weights"]
+
+    model.load_state_dict(model_weights)
+    optimizer.load_state_dict(optimizer_weights)
+
+    return checkpoint["iteration"]
