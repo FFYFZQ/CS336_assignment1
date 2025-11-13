@@ -1,5 +1,7 @@
 # CS336 任务一：从零构建 Transformer 语言模型
 
+![alt text](image.png)
+
 ## 项目简介
 
 本仓库是我对斯坦福大学 CS336 课程任务一 "Building a Transformer LM" 的个人实现。该任务旨在从零开始，手动实现并训练一个完整的 Transformer 语言模型。
