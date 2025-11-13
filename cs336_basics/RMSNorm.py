@@ -1,6 +1,10 @@
-from turtle import forward
+"""
+实现了RMSNorm模块，作用类似于layernorm
+
+"""
 import torch
 import torch.nn as nn
+
 
 
 class RMSNorm(nn.Module):
